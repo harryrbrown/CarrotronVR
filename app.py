@@ -6,7 +6,7 @@ except ImportError:
     import math
 
 
-from flask import Flask, current_app
+from flask import Flask, current_app, render_template
 from flask_socketio import SocketIO
 
 from OpenSSL import SSL
@@ -101,6 +101,10 @@ def new_joystick(data):
     with current_app as app:
         app.config['robot']['leftmotor'].set_speed(left_speed)
         app.config['robot']['rightmotor'].set_speed(right_speed)
+
+@app.route('/')
+def index():
+    return render_template('videofeed.html')
 
 
 if __name__ == '__main__':
