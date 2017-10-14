@@ -10,8 +10,12 @@ app.get('/', function(req, res) {
 io.on('connection', function(socket) {
    console.log('A user connected');
 
-   socket.on('clientEvent', function(data) {
-      console.log(data);
+   socket.on('buttonEvent', function(data) {
+      console.log("Button: " + data);
+   });
+
+   socket.on('rotationEvent', function(data) {
+      console.log("Rotation: " + data);
    });
 
    //Whenever someone disconnects this piece of code executed
