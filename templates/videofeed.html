@@ -57,6 +57,53 @@
 <script src="https://cdn.pubnub.com/pubnub-3.7.14.min.js"></script>
 <script src="https://cdn.pubnub.com/webrtc/webrtc.js"></script>
 <script src="https://cdn.pubnub.com/webrtc/rtc-controller.js"></script>
+<script src = "/socket.io/socket.io.js"></script>
+
+<script>
+  var socket = io();
+  var resetX = 0;
+  var resetY = 0;
+  var event_x = 0;
+  var event_y = 0;
+  var prev_x = 0;
+  var prev_y = 0;
+
+  function handleOrientation(event) {
+      var x = (event.alpha - resetX);  // In degree in the range [0, 360]
+      var y = (event.gamma - resetY); // In degree in the range [-90,90]
+      event_x = event.alpha;
+      event_y = event.gamma;
+
+      while (x < -90 || x > 90) {
+        if (x < -90) { x += 180 };
+        if (x > 90)  { x -= 180 };
+      }
+
+      while (y < -90 || y > 90) {
+         if (y < -90) { y += 180 };
+         if (y > 90)  { y -= 180 };
+      }
+
+      x = Math.round(x);
+      y = Math.round(y);
+
+      if(prev_x != x || prev_y != y) {
+            socket.emit('angles', (-x, -y));
+      }
+
+      prev_x = x;
+      prev_y = y;
+    }
+
+    function resetNumbers() {
+      resetX = event_x;
+      resetY = event_y;
+    }
+
+    window.addEventListener('deviceorientation', handleOrientation);
+
+</script>
+
 <script>
 
             var signalling_server_hostname = "10.4.180.77";
