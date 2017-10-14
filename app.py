@@ -21,7 +21,6 @@ MOTOR_B_PINS = (6, 7)
 X_SERVO = (8,)
 Y_SERVO = (9,)
 
-
 board = ArduinoBoard('/dev/ttyACM1')
 
 leftmotor = MotorDriveL9110(board, MOTOR_A_PINS)
@@ -30,27 +29,15 @@ xservo = ServoSG90(board, X_SERVO)
 yservo = ServoSG90(board, Y_SERVO)
 
 xservo.set_degrees(90)
-yservo.set_degrees(90) # Set the pins to the middle
+yservo.set_degrees(90)  # Set the pins to the middle
 
-config = {
-    'SECRET_KEY': 'sglkaj;lgkjrfla',
+# 'driver': DifferentialPilot(board, leftmotor, rightmotor),
 
-    'ROBOT': {
-        'board': board,
-        'leftmotor': leftmotor,
-        'rightmotor': rightmotor,
-        'driver': DifferentialPilot(board, leftmotor, rightmotor),
-        'xservo': xservo,
-        'yservo': yservo,
-
-        'X_JOYSTICK_SENSATIVITY': 1.0,  # Reduce these to reduce the rotation speed of robot.
-        'Y_JOYSTICK_SENSATIVITY': 1.0,
-    }
-}
+# 'X_JOYSTICK_SENSATIVITY': 1.0,  # Reduce these to reduce the rotation speed of robot.
+# 'Y_JOYSTICK_SENSATIVITY': 1.0,
 
 app = Flask(__name__)
 socket = SocketIO(app)
-app.config.from_object(config)
 
 
 @socket.on('angles')
@@ -64,11 +51,9 @@ def new_angles(angles):
 
     x, y = angles
 
-    app = current_app._get_current_object()
     print(app.config)
-    app.config['ROBOT']['xservo'].set_degrees(x + 90)  # Servo wants between 0-180. we get -90 - 90
-    app.config['ROBOT']['yservo'].set_degrees(y + 90)
-#    send(angles)
+    xservo.set_degrees(x + 90)  # Servo wants between 0-180. we get -90 - 90
+    yservo.set_degrees(y + 90)
 
 
 @socket.on('joystick')
@@ -100,9 +85,8 @@ def new_joystick(data):
             left_speed = -joystick_y
         right_speed = (joystick_x ** 2 + joystick_y ** 2) ** 0.5
 
-    with current_app as app:
-        app.config['ROBOT']['leftmotor'].set_speed(left_speed)
-        app.config['ROBOT']['rightmotor'].set_speed(right_speed)
+    leftmotor.speed = left_speed
+    rightmotor.speed = right_speed
 
 
 @app.route('/')
