@@ -5,8 +5,14 @@ try:
 except ImportError:
     import math
 
+
 from flask import Flask, current_app
 from flask_socketio import SocketIO
+
+from OpenSSL import SSL
+context = SSL.Context(SSL.SSLv23_METHOD)
+context.use_privatekey_file('selfsign.key')
+context.use_certificate_file('selfsign.crt')
 
 from Carrotron2.board.arduino import ArduinoBoard
 from Carrotron2.control.pilot import DifferentialPilot
@@ -98,4 +104,4 @@ def new_joystick(data):
 
 
 if __name__ == '__main__':
-    app.run()
+    app.run(host='0.0.0.0', port=5000, debug=True, ssl_context=context)
