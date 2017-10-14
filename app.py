@@ -14,12 +14,16 @@ from Carrotron2.board.arduino import ArduinoBoard
 from Carrotron2.control.pilot import DifferentialPilot
 from Carrotron2.output import MotorDriveL9110, ServoSG90
 
+logging.basicConfig(level=logging.DEBUG)
+
 MOTOR_A_PINS = (4, 5)
 MOTOR_B_PINS = (6, 7)
 X_SERVO = (8,)
 Y_SERVO = (9,)
 
+
 board = ArduinoBoard('/dev/ttyACM1')
+
 leftmotor = MotorDriveL9110(board, MOTOR_A_PINS)
 rightmotor = MotorDriveL9110(board, MOTOR_B_PINS)
 xservo = ServoSG90(board, X_SERVO)
@@ -31,7 +35,7 @@ yservo.set_degrees(90) # Set the pins to the middle
 config = {
     'SECRET_KEY': 'sglkaj;lgkjrfla',
 
-    'robot': {
+    'ROBOT': {
         'board': board,
         'leftmotor': leftmotor,
         'rightmotor': rightmotor,
@@ -62,9 +66,10 @@ def new_angles(angles):
 
     app = current_app._get_current_object()
     print(app.config)
-    app.config['robot']['xservo'].set_degrees(x + 90)  # Servo wants between 0-180. we get -90 - 90
-    app.config['robot']['yservo'].set_degrees(y + 90)
+    app.config['ROBOT']['xservo'].set_degrees(x + 90)  # Servo wants between 0-180. we get -90 - 90
+    app.config['ROBOT']['yservo'].set_degrees(y + 90)
 #    send(angles)
+
 
 @socket.on('joystick')
 def new_joystick(data):
@@ -96,8 +101,9 @@ def new_joystick(data):
         right_speed = (joystick_x ** 2 + joystick_y ** 2) ** 0.5
 
     with current_app as app:
-        app.config['robot']['leftmotor'].set_speed(left_speed)
-        app.config['robot']['rightmotor'].set_speed(right_speed)
+        app.config['ROBOT']['leftmotor'].set_speed(left_speed)
+        app.config['ROBOT']['rightmotor'].set_speed(right_speed)
+
 
 @app.route('/')
 def index():
