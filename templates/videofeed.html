@@ -339,7 +339,7 @@
 
 
             var signalling_server_hostname = "10.4.180.77";
-            var signalling_server_address = signalling_server_hostname + ':' + (location.port || 8080);
+            var signalling_server_address = signalling_server_hostname + ':' + 8080;
             var isFirefox = typeof InstallTrigger !== 'undefined';// Firefox 1.0+
 
             console.log(signalling_server_hostname, signalling_server_address);
@@ -464,7 +464,8 @@
 //                    document.documentElement.style.cursor = 'wait';
                     var server = signalling_server_address;
 
-                    var protocol = ['https:', 'file:'].indexOf(location.protocol) > 0 ? "wss:" : "ws:";
+                    //var protocol = ['https:', 'file:'].indexOf(location.protocol) > 0 ? "wss:" : "ws:";
+                    var protocol = 'wss:';
                     ws = new WebSocket(protocol + '//' + server + '/stream/webrtc');
 
                     function call(stream) {

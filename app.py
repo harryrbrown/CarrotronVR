@@ -103,5 +103,5 @@ def index():
 
 
 if __name__ == '__main__':
-    context = ('selfsign.key', 'selfsign.crt')
+    context = ('selfsign.crt', 'selfsign.key')
     app.run(host='0.0.0.0', port=5000, debug=True, ssl_context=context)
