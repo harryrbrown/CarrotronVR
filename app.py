@@ -49,8 +49,8 @@ config = {
 }
 
 app = Flask(__name__)
-app.config.from_object(config)
 socket = SocketIO(app)
+app.config.from_object(config)
 
 
 @socket.on('angles')
