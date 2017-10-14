@@ -23,7 +23,7 @@ MOTOR_B_PINS = (6, 7)
 X_SERVO = (8,)
 Y_SERVO = (9,)
 
-board = ArduinoBoard('COM3')
+board = ArduinoBoard('/dev/ttyACM0')
 leftmotor = MotorDriveL9110(board, MOTOR_A_PINS)
 rightmotor = MotorDriveL9110(board, MOTOR_B_PINS)
 xservo = ServoSG90(board, X_SERVO)
