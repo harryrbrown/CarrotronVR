@@ -425,14 +425,12 @@
               start();
 
 
-              var leftviewer = document.getElementById('leftfeed');
-              var rightviewer = document.getElementById('rightviewer');
-
               var timer = setInterval(function forceredraw() {
-                leftviewer.style.display = 'none';
-                leftviewer.style.display = '';
-                rightviewer.style.display = 'none';
-                rightviewer.style.display = '';
+                document.getElementById('leftfeed').style.display = 'none';
+                document.getElementById('leftfeed').style.display = '';
+
+                document.getElementById('rightviewer').style.display = 'none';
+                document.getElementById('rightviewer').style.display = '';
               }, 333);
             };
 
