@@ -1,6 +1,10 @@
 var app = require('express')();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
+var resetX = 0;
+var resetY = 0;
+var event_x = 0;
+var event_y = 0;
 
 app.get('/', function(req, res) {
    res.sendfile('index.html');
@@ -10,8 +14,17 @@ app.get('/', function(req, res) {
 io.on('connection', function(socket) {
    console.log('A user connected');
 
-   socket.on('clientEvent', function(data) {
-      console.log(data);
+   socket.on('buttonEvent', function(data) {
+      console.log("Button: " + data);
+
+      if(data == 8) {
+        resetX = event_x;
+        resetY = event_y;
+      }
+   });
+
+   socket.on('rotationEvent', function(data) {
+      console.log("Rotation: " + data);
    });
 
    //Whenever someone disconnects this piece of code executed

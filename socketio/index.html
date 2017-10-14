@@ -3,6 +3,7 @@
    <head>
       <title>Hello world</title>
    </head>
+
    <script src = "/socket.io/socket.io.js"></script>
    <body>
      Hello world
@@ -10,45 +11,155 @@
 
      <pre class="output"></pre>
 
+     <h2 id="start">Press a button on your controller to start</h2>
+     <a href="https://github.com/luser/gamepadtest"><img style="position: absolute; top: 0; right: 0; border: 0;" src="https://s3.amazonaws.com/github/ribbons/forkme_right_green_007200.png" alt="Fork me on GitHub"></a>
+
+
    </body>
+    <script>
+      var socket = io();
+      var output = document.querySelector('.output');
+
+      function handleOrientation(event) {
+        var x = (event.alpha - resetX);  // In degree in the range [0, 360]
+        var y = (event.gamma - resetY); // In degree in the range [-90,90]
+        event_x = event.alpha;
+        event_y = event.gamma;
+
+       while (x < -90 || x > 90) {
+         if (x < -90) { x += 180 };
+         if (x > 90)  { x -= 180 };
+       }
+
+       while (y < -90 || y > 90) {
+         if (y < -90) { y += 180 };
+         if (y > 90)  { y -= 180 };
+       }
+
+        output.innerHTML  = "alpha : " + -x + "\n";
+        output.innerHTML += "gamma: " + -y + "\n";
+
+        socket.emit('rotationEvent', "Alpha: " + -x + "     Gamma: " + -y);
+      }
+
+      function resetNumbers() {
+        resetX = event_x;
+        resetY = event_y;
+      }
+
+      window.addEventListener('deviceorientation', handleOrientation);
 
 
-        <script>
-          var socket = io();
-          var output = document.querySelector('.output');
-          var resetX = 0;
-          var resetY = 0;
 
-          var event_x = 0;
-          var event_y = 0;
+    var haveEvents = 'GamepadEvent' in window;
+    var haveWebkitEvents = 'WebKitGamepadEvent' in window;
+    var controllers = {};
+    var rAF = window.mozRequestAnimationFrame ||
+      window.webkitRequestAnimationFrame ||
+      window.requestAnimationFrame;
 
-          function handleOrientation(event) {
-            var x = (event.alpha - resetX);  // In degree in the range [0, 360]
-            var y = (event.gamma - resetY); // In degree in the range [-90,90]
-            event_x = event.alpha;
-            event_y = event.gamma;
+    function connecthandler(e) {
+      addgamepad(e.gamepad);
+    }
+    function addgamepad(gamepad) {
+      controllers[gamepad.index] = gamepad; var d = document.createElement("div");
+      d.setAttribute("id", "controller" + gamepad.index);
+      var t = document.createElement("h1");
+      t.appendChild(document.createTextNode("gamepad: " + gamepad.id));
+      d.appendChild(t);
+      var b = document.createElement("div");
+      b.className = "buttons";
+      for (var i=0; i<gamepad.buttons.length; i++) {
+        var e = document.createElement("span");
+        e.className = "button";
+        //e.id = "b" + i;
+        e.innerHTML = i;
+        b.appendChild(e);
+      }
+      d.appendChild(b);
+      var a = document.createElement("div");
+      a.className = "axes";
+      for (i=0; i<gamepad.axes.length; i++) {
+        e = document.createElement("progress");
+        e.className = "axis";
+        //e.id = "a" + i;
+        e.setAttribute("max", "2");
+        e.setAttribute("value", "1");
+        e.innerHTML = i;
+        a.appendChild(e);
+      }
+      d.appendChild(a);
+      document.getElementById("start").style.display = "none";
+      document.body.appendChild(d);
+      rAF(updateStatus);
+    }
 
-           while (x < -90 || x > 90) {
-             if (x < -90) { x += 180 };
-             if (x > 90)  { x -= 180 };
-           }
+    function disconnecthandler(e) {
+      removegamepad(e.gamepad);
+    }
 
-           while (y < -90 || y > 90) {
-             if (y < -90) { y += 180 };
-             if (y > 90)  { y -= 180 };
-           }
+    function removegamepad(gamepad) {
+      var d = document.getElementById("controller" + gamepad.index);
+      document.body.removeChild(d);
+      delete controllers[gamepad.index];
+    }
 
-            output.innerHTML  = "alpha : " + -x + "\n";
-            output.innerHTML += "gamma: " + -y + "\n";
-
-            socket.emit('clientEvent', "Alpha: " + -x + "     Gamma: " + -y);
+    function updateStatus() {
+      scangamepads();
+      for (j in controllers) {
+        var controller = controllers[j];
+        var d = document.getElementById("controller" + j);
+        var buttons = d.getElementsByClassName("button");
+        for (var i=0; i<controller.buttons.length; i++) {
+          var b = buttons[i];
+          var val = controller.buttons[i];
+          var pressed = val == 1.0;
+          if (typeof(val) == "object") {
+            pressed = val.pressed;
+            val = val.value;
           }
-
-          function resetNumbers() {
-            resetX = event_x;
-            resetY = event_y;
+          var pct = Math.round(val * 100) + "%";
+          b.style.backgroundSize = pct + " " + pct;
+          if (pressed) {
+            b.className = "button pressed";
+            socket.emit('buttonEvent', i);
+          } else {
+            b.className = "button";
           }
+        }
 
-          window.addEventListener('deviceorientation', handleOrientation);
-        </script>
+        var axes = d.getElementsByClassName("axis");
+        for (var i=0; i<controller.axes.length; i++) {
+          var a = axes[i];
+          a.innerHTML = i + ": " + controller.axes[i].toFixed(4);
+          a.setAttribute("value", controller.axes[i] + 1);
+        }
+      }
+      rAF(updateStatus);
+    }
+
+    function scangamepads() {
+      var gamepads = navigator.getGamepads ? navigator.getGamepads() : (navigator.webkitGetGamepads ? navigator.webkitGetGamepads() : []);
+      for (var i = 0; i < gamepads.length; i++) {
+        if (gamepads[i]) {
+          if (!(gamepads[i].index in controllers)) {
+            addgamepad(gamepads[i]);
+          } else {
+            controllers[gamepads[i].index] = gamepads[i];
+          }
+        }
+      }
+    }
+
+    if (haveEvents) {
+      window.addEventListener("gamepadconnected", connecthandler);
+      window.addEventListener("gamepaddisconnected", disconnecthandler);
+    } else if (haveWebkitEvents) {
+      window.addEventListener("webkitgamepadconnected", connecthandler);
+      window.addEventListener("webkitgamepaddisconnected", disconnecthandler);
+    } else {
+      setInterval(scangamepads, 500);
+    }
+
+    </script>
 </html>
