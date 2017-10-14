@@ -23,6 +23,8 @@
       var resetY = 0;
       var event_x = 0;
       var event_y = 0;
+      var prev_x = 0;
+      var prev_y = 0;
 
       function handleOrientation(event) {
         var x = (event.alpha - resetX);  // In degree in the range [0, 360]
@@ -40,10 +42,18 @@
          if (y > 90)  { y -= 180 };
        }
 
-        output.innerHTML  = "alpha : " + -x + "\n";
-        output.innerHTML += "gamma: " + -y + "\n";
+	x = Math.round(x);
+	y = Math.round(y);
 
-        socket.emit('rotationEvent', "Alpha: " + -x + "     Gamma: " + -y);
+        output.innerHTML  = "alpha : " + (-x) + "\n";
+        output.innerHTML += "gamma: " + (-y) + "\n";
+	
+	if(prev_x != x || prev_y != y) {
+          socket.emit('rotationEvent', "Alpha: " + -x + "     Gamma: " + -y);
+	}
+
+	prev_x = x;
+	prev_y = y;
       }
 
       function resetNumbers() {

@@ -1,0 +1,5 @@
+flask
+flask-socketio
+
+-e git://github.com/alexander-lloyd/Carrotron2.git#egg=Carrotron2
+
