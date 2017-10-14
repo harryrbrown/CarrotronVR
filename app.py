@@ -9,11 +9,6 @@ except ImportError:
 from flask import Flask, current_app, render_template
 from flask_socketio import SocketIO
 
-from OpenSSL import SSL
-context = SSL.Context(SSL.SSLv23_METHOD)
-context.use_privatekey_file('selfsign.key')
-context.use_certificate_file('selfsign.crt')
-
 from Carrotron2.board.arduino import ArduinoBoard
 from Carrotron2.control.pilot import DifferentialPilot
 from Carrotron2.output import MotorDriveL9110, ServoSG90
@@ -108,4 +103,5 @@ def index():
 
 
 if __name__ == '__main__':
+    context = ('selfsign.key', 'selfsign.crt')
     app.run(host='0.0.0.0', port=5000, debug=True, ssl_context=context)
