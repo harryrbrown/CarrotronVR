@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<!-- saved from url=(0048)http://10.4.180.77:8000/Orientation_example.html -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+        <link href="./Orientation_example_files/samples.css" rel="stylesheet" type="text/css">
+
+        <style type="text/css">
+            .garden {
+  position: relative;
+  width : 200px;
+  height: 200px;
+  border: 5px solid #CCC;
+  border-radius: 10px;
+}
+
+.ball {
+  position: absolute;
+  top   : 90px;
+  left  : 90px;
+  width : 20px;
+  height: 20px;
+  background: green;
+  border-radius: 100%;
+}
+        </style>
+
+    </head>
+    <body>
+
+<h1 onclick="resetNumbers()">RESET</h1>
+
+<pre class="output"></pre>
+
+
+<script type="text/javascript">
+  var output = document.querySelector('.output');
+  var resetX = 0;
+  var resetY = 0;
+
+  var event_x = 0;
+  var event_y = 0;
+
+  function handleOrientation(event) {
+    var x = (event.alpha - resetX);  // In degree in the range [0, 360]
+    var y = (event.gamma - resetY); // In degree in the range [-90,90]
+    event_x = event.alpha;
+    event_y = event.gamma;
+
+   // if(event.gamma > 0){
+   //   x += 180;
+   // }
+
+   while (x < -90 || x > 90) {
+     if (x < -90) { x += 180 };
+     if (x > 90)  { x -= 180 };
+   }
+
+   while (y < -90 || y > 90) {
+     if (y < -90) { y += 180 };
+     if (y > 90)  { y -= 180 };
+   }
+
+
+    output.innerHTML  = "alpha : " + -x + "\n";
+    output.innerHTML += "gamma: " + -y + "\n";
+  }
+
+  function resetNumbers() {
+    resetX = event_x;
+    resetY = event_y;
+  }
+
+  window.addEventListener('deviceorientation', handleOrientation);
+</script>
+
+
+
+</body></html>
