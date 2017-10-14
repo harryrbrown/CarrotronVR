@@ -5,9 +5,10 @@ try:
 except ImportError:
     import math
 
+logging.basicConfig(level=logging.DEBUG)
 
 from flask import Flask, current_app, render_template
-from flask_socketio import SocketIO
+from flask_socketio import SocketIO, send
 
 from Carrotron2.board.arduino import ArduinoBoard
 from Carrotron2.control.pilot import DifferentialPilot
@@ -18,7 +19,7 @@ MOTOR_B_PINS = (6, 7)
 X_SERVO = (8,)
 Y_SERVO = (9,)
 
-board = ArduinoBoard('/dev/ttyACM0')
+board = ArduinoBoard('/dev/ttyACM1')
 leftmotor = MotorDriveL9110(board, MOTOR_A_PINS)
 rightmotor = MotorDriveL9110(board, MOTOR_B_PINS)
 xservo = ServoSG90(board, X_SERVO)
@@ -55,14 +56,15 @@ def new_angles(angles):
 
     x & y should be between -90, 90
     """
-    logging.debug("New angle. Received: {}".format(angles))
+    print("New angle. Received: {}".format(angles))
 
     x, y = angles
 
-    with current_app as app:
-        app.config['robot']['xservo'].set_degrees(x + 90)  # Servo wants between 0-180. we get -90 - 90
-        app.config['robot']['yservo'].set_degrees(y + 90)
-
+    app = current_app._get_current_object()
+    print(app.config)
+    app.config['robot']['xservo'].set_degrees(x + 90)  # Servo wants between 0-180. we get -90 - 90
+    app.config['robot']['yservo'].set_degrees(y + 90)
+#    send(angles)
 
 @socket.on('joystick')
 def new_joystick(data):
@@ -104,4 +106,4 @@ def index():
 
 if __name__ == '__main__':
     context = ('selfsign.crt', 'selfsign.key')
-    app.run(host='0.0.0.0', port=5000, debug=True, ssl_context=context)
+    socket.run(app, host='0.0.0.0', port=5000, debug=True, ssl_context=context)
