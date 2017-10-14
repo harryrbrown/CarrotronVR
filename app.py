@@ -20,6 +20,11 @@ Y_SERVO = (9,)
 board = ArduinoBoard('COM3')
 leftmotor = MotorDriveL9110(board, MOTOR_A_PINS)
 rightmotor = MotorDriveL9110(board, MOTOR_B_PINS)
+xservo = ServoSG90(board, X_SERVO)
+yservo = ServoSG90(board, Y_SERVO)
+
+xservo.set_degrees(90)
+yservo.set_degrees(90) # Set the pins to the middle
 
 config = {
     'SECRET_KEY': 'sglkaj;lgkjrfla',
@@ -29,8 +34,8 @@ config = {
         'leftmotor': leftmotor,
         'rightmotor': rightmotor,
         'driver': DifferentialPilot(board, leftmotor, rightmotor),
-        'xservo': ServoSG90(board, X_SERVO),
-        'yservo': ServoSG90(board, Y_SERVO),
+        'xservo': xservo,
+        'yservo': yservo,
 
         'X_JOYSTICK_SENSATIVITY': 1.0,  # Reduce these to reduce the rotation speed of robot.
         'Y_JOYSTICK_SENSATIVITY': 1.0,
