@@ -19,6 +19,10 @@
     <script>
       var socket = io();
       var output = document.querySelector('.output');
+      var resetX = 0;
+      var resetY = 0;
+      var event_x = 0;
+      var event_y = 0;
 
       function handleOrientation(event) {
         var x = (event.alpha - resetX);  // In degree in the range [0, 360]
@@ -123,6 +127,9 @@
           if (pressed) {
             b.className = "button pressed";
             socket.emit('buttonEvent', i);
+            if(i == 1){
+              resetNumbers();
+            }
           } else {
             b.className = "button";
           }
