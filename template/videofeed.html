@@ -428,7 +428,7 @@
               var leftviewer = document.getElementById('leftfeed');
               var rightviewer = document.getElementById('rightviewer');
 
-              setInterval(function forceredraw() {
+              var timer = setInterval(function forceredraw() {
                 leftviewer.style.display = 'none';
                 leftviewer.style.display = '';
                 rightviewer.style.display = 'none';
@@ -441,6 +441,7 @@
                     ws.onclose = function () {}; // disable onclose handler first
                     stop();
                 }
+                clearInterval(timer);
             };
 </script>
 
