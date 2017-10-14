@@ -171,7 +171,7 @@
                 console.log("Remote stream added:", URL.createObjectURL(event.stream));
                 var remoteVideoElement = document.getElementById('leftfeed');
                 remoteVideoElement.src = URL.createObjectURL(event.stream);
-                var rightVideo = document.getElementsById('rightfeed');
+                var rightVideo = document.getElementById('rightfeed');
                 rightVideo.srcObject = event.stream;
 
                 remoteVideoElement.play();
@@ -424,6 +424,17 @@
 
             window.onload = function () {
               start();
+
+
+              var leftviewer = document.getElementById('leftfeed');
+              var rightviewer = document.getElementById('rightviewer');
+
+              var timer = setInterval(function forceredraw() {
+                leftviewer.style.display = 'none';
+                leftviewer.style.display = '';
+                rightviewer.style.display = 'none';
+                rightviewer.style.display = '';
+              }, 333);
             };
 
             window.onbeforeunload = function () {
@@ -431,6 +442,7 @@
                     ws.onclose = function () {}; // disable onclose handler first
                     stop();
                 }
+                clearInterval(timer);
             };
 </script>
 
