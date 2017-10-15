@@ -1,5 +1,6 @@
 flask
 flask-socketio
+flask-sslify
 pyOpenSSL
 
 -e git://github.com/alexander-lloyd/Carrotron2.git#egg=Carrotron2

@@ -7,8 +7,9 @@ except ImportError:
 
 logging.basicConfig(level=logging.DEBUG)
 
-from flask import Flask, current_app, render_template
-from flask_socketio import SocketIO, send
+from flask import Flask, render_template
+from flask_socketio import SocketIO
+from flask_sslify import SSLify
 
 from Carrotron2.board.arduino import ArduinoBoard
 from Carrotron2.control.pilot import DifferentialPilot
@@ -38,6 +39,7 @@ yservo.set_degrees(90)  # Set the pins to the middle
 
 app = Flask(__name__)
 socket = SocketIO(app)
+sslify = SSLify(app)
 
 
 @socket.on('angles')
